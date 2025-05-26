@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import '../blocs/food_bloc.dart';
+import '../blocs/food_event.dart';
+import '../blocs/food_state.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../widgets/custom_row.dart';
 import '../widgets/food_cart.dart';
@@ -11,6 +14,7 @@ import '../storage/shared_prefs.dart';
 import '../styles/app_text_styles.dart';
 import 'order_screen1.dart';
 import '../models/orders.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';  // Adjust the path based on your folder structure
 
 
 class HomePage extends StatefulWidget {
@@ -61,6 +65,8 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     loadOrders();
+      context.read<FoodBloc>().add(SearchFoodEvent('')); // initial load
+
   }
 
   Future<void> loadOrders() async {
@@ -101,10 +107,12 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SearchBarWidget(
-                controller: searchController,
-                onChanged: (_) => setState(() {}),
-              ),
+             SearchBarWidget(
+  controller: searchController,
+  onChanged: (value) =>
+      context.read<FoodBloc>().add(SearchFoodEvent(value)),
+),
+
               SizedBox(height: 20),
               CustomRow(),
               SizedBox(height: 20),
@@ -127,25 +135,30 @@ class _HomePageState extends State<HomePage> {
               SizedBox(height: 25),
               Text('Eat what makes you happy', style: AppTextStyles.title),
               SizedBox(height: 10),
-              GridView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 4,
-                  childAspectRatio: 3 / 4,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                ),
-                itemCount: displayedItems.length,
-                itemBuilder: (context, index) {
-                  final item = displayedItems[index];
-                  return FoodCard(
-                    name: item.name,
-                    imageUrl: item.imageUrl,
-                    onTap: () {},
-                  );
-                },
-              ),
+                         BlocBuilder<FoodBloc, FoodState>(
+  builder: (context, state) {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 4,
+        childAspectRatio: 3 / 4,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+      ),
+      itemCount: displayedItems.length,
+      itemBuilder: (context, index) {
+        final item = displayedItems[index];
+        return FoodCard(
+          name: item.name,
+          imageUrl: item.imageUrl,
+          onTap: () {},
+        );
+      },
+    );
+  },
+),
+
               SizedBox(height: 20),
               Container(
                 height: 30,
