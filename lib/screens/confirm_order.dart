@@ -8,87 +8,85 @@ class ConfirmOrderScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => OrderBloc(),
-      child: DraggableScrollableSheet(
-        initialChildSize: 0.9,
-        minChildSize: 0.6,
-        maxChildSize: 0.95,
-        expand: false,
-        builder: (context, scrollController) {
-          return Container(
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-            ),
-            child: Column(
-              children: [
-                const SizedBox(height: 8),
-                Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[400],
-                    borderRadius: BorderRadius.circular(2),
-                  ),
+    return DraggableScrollableSheet(
+      initialChildSize: 0.9,
+      minChildSize: 0.6,
+      maxChildSize: 0.95,
+      expand: false,
+      builder: (context, scrollController) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Column(
+            children: [
+              const SizedBox(height: 8),
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[400],
+                  borderRadius: BorderRadius.circular(2),
                 ),
-                const SizedBox(height: 8),
-                Expanded(
-                  child: SingleChildScrollView(
+              ),
+              const SizedBox(height: 8),
+              Expanded(
+                child: SingleChildScrollView(
                     controller: scrollController,
                     padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _header(context),
-                        const SizedBox(height: 16),
-                        _deliveryInfo(),
-                        _itemRow(context),
-                        _cookingInstructions(),
-                        const Divider(),
-                        _promoCodeSection(),
-                        const Divider(),
-                        _tipValetSection(context),
-                        const Divider(),
-                        _chargesSection(),
-                        const Divider(),
-                        _covidCheckbox(),
-                        const Divider(),
-                        _deliveryInstructionsSection(),
-                        _yourDetailsSection(),
-                        _climateInfoSection(),
-                        const SizedBox(height: 80), // space for button
-                      ],
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: SizedBox(
-                    height: 50,
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // confirm order logic
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
+                    child: BlocBuilder<OrderBloc, OrderState>(
+                        builder: (context, state) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _header(context),
+                          const SizedBox(height: 16),
+                          _deliveryInfo(),
+                          _itemRow(context, state),
+                          _cookingInstructions(),
+                          const Divider(),
+                          _promoCodeSection(),
+                          const Divider(),
+                          _tipValetSection(context),
+                          const Divider(),
+                          _chargesSection(state),
+                          const Divider(),
+                          _covidCheckbox(),
+                          const Divider(),
+                          _deliveryInstructionsSection(),
+                          _yourDetailsSection(),
+                          _climateInfoSection(),
+                          const SizedBox(height: 80), // space for button
+                        ],
+                      );
+                    })),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: SizedBox(
+                  height: 50,
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // confirm order logic
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
                       ),
-                      child: const Text("Confirm Order"),
                     ),
+                    child: const Text("Confirm Order"),
                   ),
                 ),
-              ],
-            ),
-          );
-        },
-      ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
-
 
   Widget _header(BuildContext context) {
     return AppBar(
@@ -111,11 +109,12 @@ class ConfirmOrderScreen extends StatelessWidget {
     );
   }
 
-  Widget _itemRow(BuildContext context) {
+  Widget _itemRow(BuildContext context, OrderState state) {
     return Row(
       children: [
         const Expanded(
-            child: Text("Plant Protein Bowl", style: TextStyle(fontSize: 16))),
+          child: Text("Plant Protein Bowl", style: TextStyle(fontSize: 16)),
+        ),
         Container(
           width: 110,
           height: 40,
@@ -125,15 +124,23 @@ class ConfirmOrderScreen extends StatelessWidget {
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: const [
-              Icon(Icons.remove, color: Colors.red),
-              Text('1'),
-              Icon(Icons.add, color: Colors.red),
+            children: [
+              IconButton(
+                icon: const Icon(Icons.remove, color: Colors.red),
+                onPressed: () =>
+                    context.read<OrderBloc>().add(DecreaseQuantity()),
+              ),
+              Text('${state.quantity}'),
+              IconButton(
+                icon: const Icon(Icons.add, color: Colors.red),
+                onPressed: () =>
+                    context.read<OrderBloc>().add(IncreaseQuantity()),
+              ),
             ],
           ),
         ),
         const SizedBox(width: 10),
-        const Text("₹279"),
+        Text("₹${279 * state.quantity}"),
       ],
     );
   }
@@ -155,39 +162,65 @@ class ConfirmOrderScreen extends StatelessWidget {
   }
 
   Widget _tipValetSection(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text("Please tip your valet",
-            style: TextStyle(fontWeight: FontWeight.bold)),
-        const SizedBox(height: 10),
-        Row(
-          children: [20, 30, 50].map((amount) {
-            return Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: OutlinedButton(
-                onPressed: () {
-                  context.read<OrderBloc>().add(SetTipEvent(amount));
-                },
-                child: Text("₹$amount"),
-              ),
-            );
-          }).toList(),
-        ),
-      ],
+    return BlocBuilder<OrderBloc, OrderState>(
+      builder: (context, state) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text("Please tip your valet",
+                style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 10),
+            Row(
+              children: [20, 30, 50].map((amount) {
+                final isSelected = state.tipAmount == amount;
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: isSelected ? Colors.red[50] : null,
+                      side: BorderSide(
+                          color: isSelected ? Colors.red : Colors.grey),
+                    ),
+                    onPressed: () {
+                      context.read<OrderBloc>().add(SetTipEvent(amount));
+                    },
+                    child: Text("₹$amount",
+                        style: TextStyle(
+                            color: isSelected ? Colors.red : Colors.black)),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        );
+      },
     );
   }
 
-  Widget _chargesSection() {
+  Widget _chargesSection(OrderState state) {
+    final itemTotal = 279 * state.quantity; // int
+    final deliveryCharge = 30;
+    final taxes = 5;
+    final donation = 3;
+    final tip = state.tipAmount.toDouble();
+
+    final grandTotal = itemTotal + deliveryCharge + taxes + donation + tip;
+
+    String formatPrice(double price) => "₹${price.toStringAsFixed(2)}";
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _priceRow("Item Total", "₹279.00"),
-        _priceRow("Delivery Charge", "₹50"),
-        _priceRow("Taxes", "₹5.00"),
-        _priceRow("Donate ₹3", "Add", isAction: true),
-        Divider(),
-        _priceRow("Grand Total", "₹334.00", bold: true),
+        _priceRow("Item Total", formatPrice(itemTotal.toDouble())),
+        _priceRow("Delivery Charge", formatPrice(deliveryCharge.toDouble())),
+        _priceRow("Taxes", formatPrice(taxes.toDouble())),
+        _priceRow("Donation ₹3",
+            donation > 0 ? formatPrice(donation.toDouble()) : "Add",
+            isAction: donation == 0),
+        _priceRow("Tip", tip > 0 ? formatPrice(tip) : "Add",
+            isAction: tip == 0),
+        const Divider(),
+        _priceRow("Grand Total", formatPrice(grandTotal), bold: true),
       ],
     );
   }
@@ -212,11 +245,22 @@ class ConfirmOrderScreen extends StatelessWidget {
   }
 
   Widget _covidCheckbox() {
-    return Row(
-      children: const [
-        Checkbox(value: false, onChanged: null),
-        Expanded(child: Text("This order is related to a COVID-19 emergency")),
-      ],
+    return BlocBuilder<OrderBloc, OrderState>(
+      builder: (context, state) {
+        return Row(
+          children: [
+            Checkbox(
+              value: state.isCovidChecked,
+              onChanged: (_) {
+                context.read<OrderBloc>().add(ToggleCovidCheckbox());
+              },
+            ),
+            const Expanded(
+              child: Text("This order is related to a COVID-19 emergency"),
+            ),
+          ],
+        );
+      },
     );
   }
 

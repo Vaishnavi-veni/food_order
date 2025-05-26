@@ -1,8 +1,7 @@
-import 'package:e_commerce/screens/confirm_order.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../blocs/order_bloc.dart';
+import 'confirm_order.dart';
 
 class OrderScreen2 extends StatelessWidget {
   const OrderScreen2({super.key});
@@ -17,7 +16,6 @@ class OrderScreen2 extends StatelessWidget {
         maxChildSize: 0.95,
         builder: (context, scrollController) {
           return Container(
-            padding: const EdgeInsets.all(16),
             decoration: const BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
@@ -28,14 +26,22 @@ class OrderScreen2 extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildImageHeader(),
-                  const SizedBox(height: 10),
-                  _buildDishInfo(),
-                  const Divider(),
-                  _buildAddOnSection(context),
-                  const Divider(),
-                  _buildChooseProteinSection(context),
-                  const SizedBox(height: 20),
-                  _buildBottomBar(context),
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 10),
+                        _buildDishInfo(),
+                        const Divider(),
+                        _buildAddOnSection(context),
+                        const Divider(),
+                        _buildChooseProteinSection(context),
+                        const SizedBox(height: 20),
+                        _buildBottomBar(context),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -47,7 +53,7 @@ class OrderScreen2 extends StatelessWidget {
 
   Widget _buildImageHeader() {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
       child: Image.asset(
         'assets/images/home/food/Healthy.png',
         height: 200,
@@ -61,21 +67,16 @@ class OrderScreen2 extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Plant Protein Bowl',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
+        const Text('Plant Protein Bowl',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 6),
         Row(
           children: [
-            Row(
-              children: List.generate(
-                4,
-                (index) =>
-                    const Icon(Icons.star, color: Colors.amber, size: 16),
-              )..add(
-                  const Icon(Icons.star_half, color: Colors.amber, size: 16)),
+            ...List.generate(
+              4,
+              (_) => const Icon(Icons.star, color: Colors.amber, size: 16),
             ),
+            const Icon(Icons.star_half, color: Colors.amber, size: 16),
             const SizedBox(width: 4),
             const Text('11'),
             const SizedBox(width: 10),
@@ -86,10 +87,8 @@ class OrderScreen2 extends StatelessWidget {
                 borderRadius: BorderRadius.circular(4),
                 color: Colors.red.shade50,
               ),
-              child: const Text(
-                'Bestseller',
-                style: TextStyle(fontSize: 10, color: Colors.red),
-              ),
+              child: const Text('Bestseller',
+                  style: TextStyle(fontSize: 10, color: Colors.red)),
             ),
           ],
         ),
@@ -144,8 +143,7 @@ class OrderScreen2 extends StatelessWidget {
   Widget _buildCheckboxItem(BuildContext context, String title, int price) {
     return BlocBuilder<OrderBloc, OrderState>(
       builder: (context, state) {
-        final isSelected =
-            state.selectedAddOns.contains(title); // hypothetical list
+        final isSelected = state.selectedAddOns.contains(title);
         return Row(
           children: [
             const Icon(Icons.radio_button_checked,
@@ -156,9 +154,8 @@ class OrderScreen2 extends StatelessWidget {
             const SizedBox(width: 10),
             Checkbox(
               value: isSelected,
-              onChanged: (value) {
-                context.read<OrderBloc>().add(ToggleAddOn(title));
-              },
+              onChanged: (_) =>
+                  context.read<OrderBloc>().add(ToggleAddOn(title)),
             ),
           ],
         );
@@ -174,7 +171,10 @@ class OrderScreen2 extends StatelessWidget {
           icon: const Icon(Icons.remove, color: Colors.red),
           onPressed: () => context.read<OrderBloc>().add(DecreaseQuantity()),
         ),
-        Text('$quantity'),
+        Text(
+          '$quantity',
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
         IconButton(
           icon: const Icon(Icons.add, color: Colors.red),
           onPressed: () => context.read<OrderBloc>().add(IncreaseQuantity()),
@@ -185,15 +185,14 @@ class OrderScreen2 extends StatelessWidget {
 
   Widget _buildBottomBar(BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         BlocBuilder<OrderBloc, OrderState>(
           builder: (context, state) {
             return Container(
-              width: 110,
-              height: 45,
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.red),
-                borderRadius: BorderRadius.circular(30),
+                border: Border.all(color: const Color(0xffE41515)),
+                borderRadius: BorderRadius.circular(10),
               ),
               child: _buildQuantityControl(context, state.quantity),
             );
@@ -203,19 +202,18 @@ class OrderScreen2 extends StatelessWidget {
         Expanded(
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
+              backgroundColor: const Color(0xffE41515),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30)),
+                borderRadius: BorderRadius.circular(10),
+              ),
               padding: const EdgeInsets.symmetric(vertical: 14),
             ),
-            onPressed: () {
-              showConfirmOrderBottomSheet(context);
-            },
+            onPressed: () => showConfirmOrderBottomSheet(context),
             child: BlocBuilder<OrderBloc, OrderState>(
               builder: (context, state) {
-                final totalPrice = 279 * state.quantity + state.addOnsPrice;
-                return Text('Add ₹$totalPrice',
-                    style: const TextStyle(fontSize: 16, color: Colors.white));
+                final total = 279 * state.quantity + state.addOnsPrice;
+                return Text('Add ₹$total',
+                    style: const TextStyle(color: Colors.white, fontSize: 16));
               },
             ),
           ),
@@ -225,12 +223,12 @@ class OrderScreen2 extends StatelessWidget {
   }
 
   void showConfirmOrderBottomSheet(BuildContext context) {
-    final orderBloc = context.read<OrderBloc>(); // Get existing bloc
+    final orderBloc = context.read<OrderBloc>();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => BlocProvider.value(
+      builder: (_) => BlocProvider.value(
         value: orderBloc,
         child: const ConfirmOrderScreen(),
       ),

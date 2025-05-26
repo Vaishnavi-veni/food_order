@@ -18,3 +18,6 @@ class ToggleAddOn extends OrderEvent {
 class IncreaseQuantity extends OrderEvent {}
 
 class DecreaseQuantity extends OrderEvent {}
+
+class ToggleCovidCheckbox extends OrderEvent {}
+

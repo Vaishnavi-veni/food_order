@@ -49,7 +49,6 @@ class _CustomProfileDrawerState extends State<CustomProfileDrawer> {
                 color: Colors.white,
                 child: Column(
                   children: [
-                    // Close Button
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0, right: 12.0),
                       child: Align(
@@ -61,7 +60,6 @@ class _CustomProfileDrawerState extends State<CustomProfileDrawer> {
                         ),
                       ),
                     ),
-                    // Profile Info
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16.0, vertical: 10),
@@ -139,7 +137,7 @@ class _CustomProfileDrawerState extends State<CustomProfileDrawer> {
       subtitle: Text(subtitle, style: TextStyle(color: Colors.grey)),
       trailing:
           Icon(Icons.arrow_forward_ios, size: 16, color: Color(0xff9B9B9B)),
-      enabled: false, // Makes it non-clickable
+      // enabled: false, 
     );
   }
 }

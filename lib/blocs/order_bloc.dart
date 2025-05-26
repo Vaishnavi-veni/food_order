@@ -41,6 +41,10 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       ));
     });
 
+    on<ToggleCovidCheckbox>((event, emit) {
+      emit(state.copyWith(isCovidChecked: !state.isCovidChecked));
+    });
+
     // Handle increase quantity
     on<IncreaseQuantity>((event, emit) {
       emit(state.copyWith(quantity: state.quantity + 1));

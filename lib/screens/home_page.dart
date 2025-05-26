@@ -214,7 +214,7 @@ class _HomePageState extends State<HomePage> {
                         builder: (_) => const OrderScreen1(
                               name: 'Amul',
                               type: 'Desserts, Ice Cream, Beverages',
-                              location: 'Kukatpally, Hyderabad',
+                              location: 'Dwaraka, Delhi',
                               rating: 4.2,
                               imageUrl:
                                   'assets/images/home/restaurant/food1.png',
