@@ -55,8 +55,8 @@ class OrderScreen2 extends StatelessWidget {
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
       child: Image.asset(
-        'assets/images/home/food/Healthy.png',
-        height: 200,
+       'assets/images/order_screen1/protein.png',
+        height: 250,
         width: double.infinity,
         fit: BoxFit.cover,
       ),

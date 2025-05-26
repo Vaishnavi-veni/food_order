@@ -222,7 +222,7 @@ class OrderScreen1 extends StatelessWidget {
         'count': 11,
         'desc':
             '[Veg preparation] Spring mix, plant based, organic... read more',
-        'image': 'assets/images/home/food/Healthy.png'
+        'image': 'assets/images/order_screen1/protein.png'
       },
       {
         'name': 'Spring Veg Plater',
@@ -231,7 +231,7 @@ class OrderScreen1 extends StatelessWidget {
         'count': 16,
         'desc':
             '[Veg preparation] Spring mix, plant based, organic... read more',
-        'image': 'assets/images/home/food/Healthy.png'
+        'image': 'assets/images/order_screen1/pasta.png'
       },
     ];
 
